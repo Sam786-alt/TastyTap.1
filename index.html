@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TastyTap – Food Ordering</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" id="brand" aria-label="TastyTap, go to menu">🍔 TastyTap</button>
+    <nav class="actions" aria-label="Main">
+      <button id="trackBtn" class="btn ghost">Track order</button>
+      <button id="cartBtn" class="btn ghost" aria-label="Open cart">🛒 <span id="cartCount">0</span></button>
+      <button id="themeBtn" class="btn ghost" aria-label="Toggle dark mode">🌙</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 1. MENU -->
+    <section id="menu" class="screen">
+      <h1 tabindex="-1">Hungry? Order in under a minute.</h1>
+      <div class="filters">
+        <label class="field grow">
+          <span>Search food</span>
+          <input type="search" id="search" placeholder="e.g. biryani, burger">
+        </label>
+        <label class="field">
+          <span>Sort by</span>
+          <select id="sort">
+            <option value="popular">Popular</option>
+            <option value="low">Price: low to high</option>
+            <option value="high">Price: high to low</option>
+          </select>
+        </label>
+      </div>
+      <div class="chips" id="chips" role="group" aria-label="Categories"></div>
+      <div class="grid" id="menuGrid" aria-live="polite"></div>
+      <div class="sticky-bar" id="stickyBar" hidden>
+        <span id="stickyText"></span>
+        <button class="btn primary" id="viewCart">View cart</button>
+      </div>
+    </section>
+
+    <!-- 2. CART -->
+    <section id="cart" class="screen" hidden>
+      <h2 tabindex="-1">Your cart</h2>
+      <div id="cartList"></div>
+      <div class="summary" id="cartSummary"></div>
+      <div class="row">
+        <button class="btn ghost" data-go="menu">‹ Add more items</button>
+        <button class="btn primary" id="toCheckout">Checkout</button>
+      </div>
+    </section>
+
+    <!-- 3. DELIVERY DETAILS -->
+    <section id="checkout" class="screen" hidden>
+      <h2 tabindex="-1">Delivery details</h2>
+      <form id="checkoutForm" novalidate>
+        <label class="field">
+          <span>Full name *</span>
+          <input id="cName" autocomplete="name" required>
+          <small class="err" id="eName"></small>
+        </label>
+        <label class="field">
+          <span>Mobile number * (03XXXXXXXXX)</span>
+          <input id="cPhone" inputmode="numeric" autocomplete="tel" maxlength="11" required>
+          <small class="err" id="ePhone"></small>
+        </label>
+        <label class="field">
+          <span>Delivery address *</span>
+          <textarea id="cAddress" rows="3" required></textarea>
+          <small class="err" id="eAddress"></small>
+        </label>
+        <label class="field">
+          <span>Note for rider (optional)</span>
+          <input id="cNote" placeholder="e.g. ring the bell twice">
+        </label>
+        <p class="hint">* Required field</p>
+        <div class="row">
+          <button type="button" class="btn ghost" data-go="cart">‹ Back</button>
+          <button type="submit" class="btn primary">Continue to payment</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- 4. PAYMENT -->
+    <section id="payment" class="screen" hidden>
+      <h2 tabindex="-1">Payment</h2>
+      <form id="payForm" novalidate>
+        <fieldset>
+          <legend class="sr-only">Payment method</legend>
+          <label class="option"><input type="radio" name="pay" value="Card" checked> 💳 Debit / Credit card</label>
+          <label class="option"><input type="radio" name="pay" value="JazzCash"> 📱 JazzCash</label>
+          <label class="option"><input type="radio" name="pay" value="Easypaisa"> 🏦 Easypaisa</label>
+          <label class="option"><input type="radio" name="pay" value="Cash on delivery"> 💵 Cash on delivery</label>
+        </fieldset>
+        <div id="cardFields">
+          <label class="field">
+            <span>Card number *</span>
+            <input id="cardNo" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456">
+            <small class="err" id="eCard"></small>
+          </label>
+        </div>
+        <div class="summary" id="payTotal"></div>
+        <div class="row">
+          <button type="button" class="btn ghost" data-go="checkout">‹ Back</button>
+          <button type="submit" class="btn primary">Place order</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- 5. CONFIRMATION -->
+    <section id="confirm" class="screen" hidden>
+      <div class="tick" aria-hidden="true">✓</div>
+      <h2 tabindex="-1">Order placed!</h2>
+      <div class="ticket" id="ticket"></div>
+      <div class="row">
+        <button class="btn ghost" id="printBtn">🖨 Print receipt</button>
+        <button class="btn danger" id="cancelBtn">Cancel order</button>
+        <button class="btn primary" id="newOrder">Order again</button>
+      </div>
+    </section>
+
+    <!-- 6. TRACK / MANAGE -->
+    <section id="track" class="screen" hidden>
+      <h2 tabindex="-1">Track or cancel an order</h2>
+      <form id="trackForm" novalidate>
+        <label class="field">
+          <span>Order ID *</span>
+          <input id="tId" placeholder="TT-12345" autocapitalize="characters">
+        </label>
+        <label class="field">
+          <span>Mobile number *</span>
+          <input id="tPhone" inputmode="numeric" maxlength="11">
+        </label>
+        <small class="err" id="eTrack"></small>
+        <div class="row">
+          <button type="button" class="btn ghost" data-go="menu">‹ Back to menu</button>
+          <button type="submit" class="btn primary">Find order</button>
+        </div>
+      </form>
+      <div class="ticket" id="trackResult" hidden></div>
+      <div class="row"><button class="btn danger" id="trackCancel" hidden>Cancel this order</button></div>
+    </section>
+  </main>
+
+  <dialog id="confirmDialog">
+    <p>Cancel this order? This cannot be undone.</p>
+    <div class="row">
+      <button class="btn ghost" id="keepBtn">Keep order</button>
+      <button class="btn danger" id="yesCancel">Yes, cancel</button>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
